@@ -1,0 +1,26 @@
+#port
+server:
+  port: 9090 
+#MVC 
+spring:
+  mvc:
+   view:
+     prefix: /WEB-INF/views/
+     suffix: .jsp
+  datasource:
+   url: jdbc:oracle:thin:@//211.238.142.22:1521/XE
+   username: hr
+   password: happy
+   driver-class-name: oracle.jdbc.OracleDriver
+   type: com.zaxxer.hikari.HikariDataSource
+   hikari: #커넥션풀 
+    minimum-idle: 5           # 최소 유휴(쓰지 않고 놀리는 것) 커넥션 (5개)
+    maximum-pool-size: 10     # 최대 커넥션 개수 설정 (10개). pool 의 커넥션 수가 옵션 값(10개)에 도달하게 되면 idle 인 상태는 존재하지 않게 된다.  
+    idle-timeout: 30000       # 30초 후 연결 실패시 예외 발생 
+    max-lifetime: 1800000     # 커넥션 풀에서 살아있을 수 있는 커넥션의 최대 수명시간 1,800초(30분). 30분 이상 유지된 커넥션은 제거  
+    connection-timeout: 30000 # 클라이언트가 pool에 connection을 요청하는데 기다리는 최대시간을 설정 30초
+#MyBatis
+mybatis:
+  type-aliases-package: com.sist.web.vo
+  mapper-locations: mybatis/mapper/*.xml
+
