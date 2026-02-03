@@ -85,7 +85,7 @@ pipeline {
 				    sh '''
 				        export MINIKUBE_HOME=/var/lib/jenkins
                         export KUBECONFIG=/var/lib/jenkins/.kube/config
-                        eval $(minikube docker-env)
+                        
 				        kubectl apply -f /var/lib/jenkins/k8s/deployment.yaml
 				       '''
 				}
