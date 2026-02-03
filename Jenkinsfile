@@ -70,7 +70,7 @@ pipeline {
 		stage('Docker Build') {
 			steps {
 				    sh '''
-				        docker build -t chaijewon/total-app:latest .
+				        docker build -t total-app:latest .
 				       '''
 				}
 			}
@@ -80,7 +80,7 @@ pipeline {
 		stage('Deploy to MiniKube') {
 			steps {
 				    sh '''
-				       kubectl delete deployment chaijewon/total-app:latest || true
+				       kubectl delete deployment total-app || true
 				       kubectl apply -f ~/k8s/deployment.yaml
 				       '''
 				}
