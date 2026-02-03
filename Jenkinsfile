@@ -1,6 +1,7 @@
 pipeline {
 	agent any
 	
+	
 	// 전역변수 => ${SERVER_IP}
 	environment {
 			APP_DIR = "~/app"
