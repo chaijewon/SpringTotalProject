@@ -3,16 +3,14 @@ pipeline {
 	
 	// 전역변수 => ${SERVER_IP}
 	environment {
-			SERVER_IP = "aws ip"
-			SERVER_USER = "ubuntu"
 			APP_DIR = "~/app"
 			JAR_NAME = "SpringTotalProject-0.0.1-SNAPSHOT.war"
 	}
 		
 	stages {
 		
-		/*
-		 연결 확인 = ngrok
+		
+		 //연결 확인 = ngrok
 		 stage('Check Git Info') {
 			steps {
 				sh '''
@@ -22,8 +20,8 @@ pipeline {
 				   '''
 			}
 		}
-		*/
-		// 감지 = main : push (commit)
+		
+		/*// 감지 = main : push (commit)
 		stage('Check Out') {
 			steps {
 				 echo 'Git Checkout'
@@ -64,15 +62,15 @@ pipeline {
 		stage('Run Application') {
 			steps {
 				sshagent(credentials:['SERVER_SSH_KEY']){
-					sh """
-					    ssh -o StrictHostKeyChecking=no ${SERVER_USER}@{SERVER_IP} << 'EOF'
-					       pkill -f 'java -jar' || true
-					       nohup java -jar ${APP_DIR}/${JAR_NAME} > log.txt 2>&1 &
+sh """
+ssh -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_IP} <<EOF
+pkill -f 'java -jar' || true
+nohup java -jar ${APP_DIR}/${JAR_NAME} > log.txt 2>&1 &
 EOF
-					   """ 
+""" 
 				}
 			}
-		}
+		}*/
 		
 	}
 }
