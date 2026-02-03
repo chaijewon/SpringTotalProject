@@ -38,6 +38,7 @@ pipeline {
 			}
 		}*/
 		
+		
 		// 감지 = main : push (commit)
 		stage('Check Out') {
 			steps {
