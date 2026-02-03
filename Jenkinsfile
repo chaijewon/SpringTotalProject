@@ -41,15 +41,7 @@ pipeline {
 			}
 		}*/
 		
-		stage('Minikube Docker Env'){
-			steps {
-				  sh '''
-                     export MINIKUBE_HOME=/var/lib/jenkins
-                     export KUBECONFIG=/var/lib/jenkins/.kube/config
-                     eval $(minikube docker-env)
-                     '''
-			}
-		}
+		
 		
 		// 감지 = main : push (commit)
 		stage('Check Out') {
@@ -91,8 +83,10 @@ pipeline {
 		stage('Deploy to MiniKube') {
 			steps {
 				    sh '''
-				       kubectl delete deployment chaijewon/total-app || true
-				       kubectl apply -f ~/k8s/deployment.yaml
+				        export MINIKUBE_HOME=/var/lib/jenkins
+                        export KUBECONFIG=/var/lib/jenkins/.kube/config
+                        eval $(minikube docker-env)
+				        kubectl apply -f /var/lib/jenkins/k8s/deployment.yaml
 				       '''
 				}
 			}
