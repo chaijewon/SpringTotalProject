@@ -66,7 +66,7 @@ pipeline {
 		stage('Docker Build') {
 			steps {
 				sh '''
-					docker build -t mindory0144/total-app:latest .
+					docker build -t chaijewon/total-app:latest .
 				   '''
 			}
 		}
@@ -79,6 +79,8 @@ pipeline {
 		        	passwordVariable: 'DH_PASS'
 		    )]) {
 		     	 sh '''
+		     	     echo $DH_PASS 
+		     	     echo $DH_USER
 		       		 echo "$DH_PASS" | docker login -u "$DH_USER" --password-stdin
 		      		'''
 		    	}
@@ -89,7 +91,7 @@ pipeline {
 		stage('Docker Push') {
 		  	steps {
 		    	sh '''
-		      		docker push mindory0144/total-app:latest
+		      		docker push chaijewon/total-app:latest
 		    	'''
 		  	}
 		}
