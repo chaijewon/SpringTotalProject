@@ -80,7 +80,7 @@ pipeline {
 		stage('Deploy to MiniKube') {
 			steps {
 				    sh '''
-				       kubectl delete deployment chaijewon/total-app || true
+				       kubectl delete deployment chaijewon/total-app:latest || true
 				       kubectl apply -f ~/k8s/deployment.yaml
 				       '''
 				}
