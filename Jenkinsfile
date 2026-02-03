@@ -1,60 +1,90 @@
 pipeline {
-    agent any
-
-    environment {
-        APP_DIR = "/var/lib/jenkins/app"          // Jenkins 작업 디렉토리
-        JAR_NAME = "SpringTotalProject-0.0.1-SNAPSHOT.war"
-        DEPLOYMENT_NAME = "total-app"            // Deployment 이름
-        KUBECONFIG = "/var/lib/jenkins/.kube/config" // Jenkins kubeconfig
-        CONTAINER_PORT = "9090"                  // Pod containerPort
-    }
-
-    stages {
-
-        stage('Checkout Code') {
-            steps {
-                echo 'Git Checkout'
-                checkout scm
-            }
-        }
-
-        stage('Gradle Permission') {
-            steps {
-                sh 'chmod +x gradlew'
-            }
-        }
-
-        stage('Build WAR') {
-            steps {
-                sh './gradlew build'
-            }
-        }
-
-        stage('Docker Build') {
-            steps {
-                sh '''
-                    # Minikube Docker 환경 연결
-                    eval $(minikube docker-env)
-                    
-                    # Docker build
-                    docker build -t ${DEPLOYMENT_NAME}:latest .
-                '''
-            }
-        }
-
-        stage('Deploy to Minikube') {
-            steps {
-                sh '''
-                    export KUBECONFIG=${KUBECONFIG}
-
-                    # 기존 Deployment 삭제 (Blue/Green 적용시 true)
-                    kubectl delete deployment ${DEPLOYMENT_NAME} || true
-
-                    # Deployment 적용
-                    kubectl apply -f /var/lib/jenkins/k8s/deployment.yaml
-                '''
-            }
-        }
-
-    }
+	agent any
+	
+	
+	// 전역변수 => ${SERVER_IP}
+	environment {
+			APP_DIR = "~/app"
+			JAR_NAME = "SpringTotalProject-0.0.1-SNAPSHOT.war"
+	}
+		
+	stages {
+		
+		/*
+		     git push  = commit 
+		        |
+		     web hooks / poll
+		        |
+		     jenkins (local)
+		        |
+		      build 
+		        |
+		      docker build
+		      docker push 
+		        |
+		      minikube 
+		        | deployment.yaml update 
+		      브라우저 실행  
+		     
+		*/
+		 
+		 //연결 확인 = ngrok
+		 /*stage('Check Git Info') {
+			steps {
+				sh '''
+				    echo "===Git Info==="
+				    git branch
+				    git log -1
+				   '''
+			}
+		}*/
+		
+		
+		// 감지 = main : push (commit)
+		stage('Check Out') {
+			steps {
+				 echo 'Git Checkout'
+                 checkout scm
+			}
+		}
+		
+		// gradle build => war파일을 다시 생성 
+		stage('Gradle Permission') {
+			steps {
+				sh '''
+				    chmod +x gradlew
+				   '''
+			}
+		}
+		
+		// build 시작 
+		stage('Gradle Build') {
+			steps {
+				sh '''
+				    ./gradlew build
+				   '''
+			}
+		}
+		
+		// Docker Build 
+		stage('Docker Build') {
+			steps {
+				    sh '''
+				        docker build -t chaijewon/total-app:latest .
+				       '''
+				}
+			}
+		
+		// 실행 명령 => 명령
+		
+		stage('Deploy to MiniKube') {
+			steps {
+				    sh '''
+				       kubectl delete deployment chaijewon/total-app || true
+				       kubectl apply -f ~/k8s/deployment.yaml
+				       '''
+				}
+			}
+		
+	}
 }
