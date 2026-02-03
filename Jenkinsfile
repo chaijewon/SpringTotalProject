@@ -6,6 +6,8 @@ pipeline {
 	environment {
 			APP_DIR = "~/app"
 			JAR_NAME = "SpringTotalProject-0.0.1-SNAPSHOT.war"
+			 MINIKUBE_HOME = "/var/lib/jenkins"
+             KUBECONFIG = "/var/lib/jenkins/.kube/config"
 	}
 		
 	stages {
@@ -42,7 +44,8 @@ pipeline {
 		stage('Minikube Docker Env'){
 			steps {
 				  sh '''
-                     export MINIKUBE_HOME=/home/jenkins   # Jenkins 홈에 minikube 프로파일 복사 후
+                     export MINIKUBE_HOME=/var/lib/jenkins
+                     export KUBECONFIG=/var/lib/jenkins/.kube/config
                      eval $(minikube docker-env)
                      '''
 			}
