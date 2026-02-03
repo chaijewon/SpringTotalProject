@@ -39,6 +39,14 @@ pipeline {
 			}
 		}*/
 		
+		stage('Minikube Docker Env'){
+			steps {
+				  sh '''
+                     export MINIKUBE_HOME=/home/jenkins   # Jenkins 홈에 minikube 프로파일 복사 후
+                     eval $(minikube docker-env)
+                     '''
+			}
+		}
 		
 		// 감지 = main : push (commit)
 		stage('Check Out') {
