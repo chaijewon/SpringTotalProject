@@ -27,7 +27,6 @@ pipeline {
 		      브라우저 실행  
 		     
 		*/
-		
 		 //연결 확인 = ngrok
 		 /*stage('Check Git Info') {
 			steps {
