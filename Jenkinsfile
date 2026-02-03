@@ -77,7 +77,6 @@ pipeline {
 		
 		// 실행 명령 => 명령
 		
-		
 		stage('Deploy to MiniKube') {
 			steps {
 				    sh '''
