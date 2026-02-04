@@ -50,7 +50,7 @@ pipeline {
                 echo "▶ Health Check 시작"
                 for i in 1 2 3 4 5 6 7 8 9 10
                 do
-                  if curl -s http://localhost:8080/actuator/health | grep UP; then
+                  if curl -s http://localhost:9090/actuator/health | grep UP; then
                     echo "✅ HEALTH CHECK OK"
                     exit 0
                   fi
