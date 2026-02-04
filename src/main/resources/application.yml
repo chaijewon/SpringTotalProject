@@ -1,8 +1,11 @@
 #port
 server:
   port: 9090 
+  shutdown: graceful
 #MVC 
 spring:
+  lifecycle:
+   timeout-per-shutdown-phase: 5s
   mvc:
    view:
      prefix: /WEB-INF/views/
@@ -24,3 +27,11 @@ mybatis:
   type-aliases-package: com.sist.web.vo
   mapper-locations: mybatis/mapper/*.xml
 
+menagement:
+ endpoints:
+    web:
+     exposure:
+      include: health,info
+ endpoins:
+    health:
+     show-details: always	

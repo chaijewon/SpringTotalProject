@@ -1,78 +1,77 @@
 pipeline {
-    agent any
-
-    environment {
-        APP_DIR = "~/app"
-        JAR_NAME = "SpringTotalProject-0.0.1-SNAPSHOT.war"
-        DOCKER_IMAGE = "chaijewon/total-app:latest"
-        K8S_DEPLOYMENT = "totalapp-deployment"
-        K8S_YAML = "/var/lib/jenkins/k8s/deployment.yaml"
-    }
-
-    stages {
-        stage('Git Checkout') {
+	agent any
+	
+	environment {
+		APP = "spring-app"
+		IMAGE = "spring-app"
+		PORT = 9090
+	}
+	
+	stage('Git Checkout') {
             steps {
                 echo "=== Git Checkout ==="
                 checkout scm
             }
         }
 
-        stage('Gradle Permission') {
+    stage('Gradle Permission') {
             steps {
                 sh 'chmod +x gradlew'
             }
         }
 
-        stage('Gradle Build') {
+    stage('Gradle Build') {
             steps {
-                sh './gradlew clean build'
+                sh './gradlew build -x test --build-cache'
             }
         }
 
-        stage('Docker Build') {
+    stage('Docker Build') {
             steps {
-                sh "docker build -t ${DOCKER_IMAGE} ."
+                sh "docker build -t ${IMAGE}:latest ."
             }
         }
+    stage("Deply"){
+		steps {
+			script {
+                    // 기존 컨테이너 graceful 종료
+                    sh '''
+                    OLD=$(docker ps -q -f name=${APP}
+                    if [ -n "$OLD" ]; then
+                      docker stop $OLD
+                      docker rm $OLD
+                    fi
+                    '''
 
-        stage('Docker Login') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
-                    usernameVariable: 'DH_USER',
-                    passwordVariable: 'DH_PASS'
-                )]) {
-                    sh 'echo "$DH_PASS" | docker login -u "$DH_USER" --password-stdin'
+                    // 새 컨테이너 실행
+                    sh '''
+                    docker run -d --name ${APP} -p ${PORT}:9090 ${IMAGE}:latest
+                    '''
+
+                    // 헬스 체크
+                    sh '''
+                    for i in {1..10}
+                    do
+                      if curl -s http://localhost:9090/actuator/health | grep UP; then
+                        echo "HEALTH CHECK OK"
+                        exit 0
+                      fi
+                      sleep 2
+                    done
+                    exit 1
+                    '''
                 }
-            }
+		 }
+		
+	}
+	
+	 post {
+        failure {
+            echo "배포 실패 - 이전 상태 유지"
         }
-
-        stage('Docker Push') {
-            steps {
-                sh "docker push ${DOCKER_IMAGE}"
-            }
-        }
-        // minikube 배포
-        stage('Deploy to Minikube') {
-            steps {
-                sh """
-                    # Deployment 삭제 (없으면 무시)
-                    kubectl delete deployment ${K8S_DEPLOYMENT} || true
-
-                    # 배포 YAML 적용
-                    sudo -u sist /usr/local/bin/kubectl apply -f ${K8S_YAML}
-
-                    # 롤아웃 재시작 및 상태 확인
-                    sudo -u sist /usr/local/bin/kubectl rollout restart deployment/${K8S_DEPLOYMENT}
-                    sudo -u sist /usr/local/bin/kubectl rollout status deployment/${K8S_DEPLOYMENT}
-                """
-            }
-        }
-        // 동작 체크 ==> 완료
-        stage('Check Minikube Service') {
-            steps {
-                echo 'Service 완료'
-            }
+        always {
+            cleanWs()
         }
     }
+
 }
