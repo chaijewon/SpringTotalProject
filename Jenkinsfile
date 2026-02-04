@@ -48,18 +48,22 @@ pipeline {
 
                 sh '''
                 echo "▶ Health Check 시작"
-                for i in 1 2 3 4 5 6 7 8 9 10
-                do
-                  if curl -s http://localhost:9090/actuator/health | grep UP; then
-                    echo "✅ HEALTH CHECK OK"
-                    exit 0
-                  fi
-                  echo "⏳ 대기중..."
-                  sleep 2
-                done
-
-                echo "❌ HEALTH CHECK FAIL"
-                exit 1
+				for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+				do
+				  STATUS=$(curl -s http://localhost:9090/actuator/health || true)
+				
+				  echo "응답: $STATUS"
+				
+				  if echo "$STATUS" | grep -q UP; then
+				    echo "✅ HEALTH CHECK OK"
+				    exit 0
+				  fi
+				
+				  sleep 2
+				done
+				
+				echo "❌ HEALTH CHECK FAIL"
+				exit 1
                 '''
             }
         }

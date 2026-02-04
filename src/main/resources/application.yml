@@ -31,7 +31,7 @@ menagement:
  endpoints:
     web:
      exposure:
-      include: health,info
+      include: health
  endpoins:
     health:
      show-details: always	
