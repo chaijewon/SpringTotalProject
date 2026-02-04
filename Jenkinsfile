@@ -52,7 +52,7 @@ pipeline {
                 sh "docker push ${DOCKER_IMAGE}"
             }
         }
-
+        // minikube 배포
         stage('Deploy to Minikube') {
             steps {
                 sh """
