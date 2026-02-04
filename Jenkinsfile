@@ -26,6 +26,7 @@ pipeline {
 	                sh './gradlew build -x test --build-cache'
 	            }
 	    }
+	    
 	
 	    stage('Docker Build') {
 	            steps {
