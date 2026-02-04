@@ -68,7 +68,7 @@ pipeline {
                 """
             }
         }
-
+        // 동작 체크
         stage('Check Minikube Service') {
             steps {
                 sh 'kubectl get pods,svc -o wide'
