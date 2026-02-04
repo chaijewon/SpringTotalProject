@@ -37,7 +37,7 @@ pipeline {
 				script {
 	                    // 기존 컨테이너 graceful 종료
 	                    sh '''
-	                    OLD=$(docker ps -q -f name=${APP}
+	                    OLD=$(docker ps -q -f name=${APP})
 	                    if [ -n "$OLD" ]; then
 	                      docker stop $OLD
 	                      docker rm $OLD
