@@ -19,20 +19,20 @@ pipeline {
 	            steps {
 	                sh 'chmod +x gradlew'
 	            }
-	        }
+	    }
 	
 	    stage('Gradle Build') {
 	            steps {
 	                sh './gradlew build -x test --build-cache'
 	            }
-	        }
+	    }
 	
 	    stage('Docker Build') {
 	            steps {
 	                sh "docker build -t ${IMAGE}:latest ."
 	            }
-	        }
-	    stage("Deply"){
+	    }
+	    stage("Deply") {
 			steps {
 				script {
 	                    // 기존 컨테이너 graceful 종료
@@ -61,20 +61,10 @@ pipeline {
 	                    done
 	                    exit 1
 	                    '''
-	                }
-	                
+	                }            
 			 }
-			
 		}
 		
-		 post {
-	        failure {
-	            echo "배포 실패 - 이전 상태 유지"
-	        }
-	        always {
-	            cleanWs()
-	        }
-	    }
+		
 	  }
-
 }
