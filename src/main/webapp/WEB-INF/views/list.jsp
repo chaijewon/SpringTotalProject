@@ -25,7 +25,7 @@ p {
 </head>
 <body>
    <div class="container">
-     <h3 class="text-center" style="color:pink">[[[맛집 목록]]]</h3>
+     <h3 class="text-center" style="color:pink">[[[==&gt; 맛집 목록 &lt;==]]]</h3>
      <div class="row">
       <c:forEach var="vo" items="${list}">
         <div class="col-md-3">
