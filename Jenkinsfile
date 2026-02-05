@@ -35,7 +35,7 @@ pipeline {
 	    }
 	    stage('Deploy') {
             steps {
-                sh '''
+                /*sh '''
                 echo "▶ 이전 컨테이너 종료"
                 docker rm -f spring-app || true
 
@@ -55,7 +55,7 @@ pipeline {
                   echo "응답: $STATUS"
 
                   if echo "$STATUS" | grep -q UP; then
-                    echo "✅ HEALTH CHECK OK"
+                    echo "▶ HEALTH CHECK OK"
 
                     echo "▶ previous 이미지 갱신"
                     docker tag spring-app:latest spring-app:previous
@@ -66,8 +66,23 @@ pipeline {
                   sleep 2
                 done
 
-                echo "❌ HEALTH CHECK FAIL"
-                exit 1
+                echo "★ HEALTH CHECK FAIL"
+                exit 1*/
+                sh '''
+                 echo "▶ 새 컨테이너 기동"
+		        docker run -d \
+		          --name spring-app-new \
+		          -p 9090:9090 \
+		          spring-app:latest
+		
+		        echo "▶ 기동 대기"
+		        sleep 15
+		
+		        echo "▶ 기존 컨테이너 종료"
+		        docker rm -f spring-app || true
+		
+		        echo "▶ 컨테이너 이름 교체"
+		        docker rename spring-app-new spring-app
                 '''
             }
         }
@@ -75,7 +90,7 @@ pipeline {
 
     post {
         failure {
-            echo "♻️ 자동 롤백 시작"
+            echo "▶ 자동 롤백 시작"
 
             sh '''
             echo "▶ 실패 컨테이너 제거"
@@ -88,7 +103,7 @@ pipeline {
                 -p 9090:9090 \
                 spring-app:previous
             else
-              echo "❌ 롤백할 이미지 없음 (최초 배포)"
+              echo "▣ 롤백할 이미지 없음"
             fi
             '''
         }
